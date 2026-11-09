@@ -1,6 +1,6 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "yahya0335/partner-integration-api",
+    "name": "myahyakarim/partner-integration-api",
     "type": "project",
     "description": "Senior portfolio demo: partner integration with after-commit side effects.",
     "keywords": ["laravel", "integrations", "architecture"],
