@@ -1,15 +1,15 @@
 # Architecture — Partner Integration API
 
-Senior demo of treating an **external partner** as a product boundary, not “just HTTP.”
+Treat an external partner as a product boundary, not “just HTTP.”
 
 ## Context
 
-Fictional commerce platform **Northline** pushes fulfilled orders to partner **HarborPOS**.
-HarborPOS owns kitchen/ticket state after accept.
+**Northline** pushes fulfilled orders to partner **HarborPOS**.
+After accept, HarborPOS owns ticket / prep state.
 
 ## Critical rule
 
-**Do not fire partner side effects before the local DB transaction commits.**
+Do not fire partner side effects before the local DB transaction commits.
 
 ```
 begin txn
@@ -18,7 +18,7 @@ commit
   dispatch PushOrderToPartnerJob   ← afterCommit
 ```
 
-If you dispatch inside the transaction and the worker runs before commit, the partner (or your reader) sees a ghost / missing row.
+If you dispatch inside the transaction and the worker runs before commit, the partner (or your reader) can see a missing row.
 
 ## Ownership
 
@@ -38,6 +38,6 @@ If you dispatch inside the transaction and the worker runs before commit, the pa
 
 | Choice | Why |
 |--------|-----|
-| afterCommit dispatch | Prevents race with uncommitted rows |
-| Explicit ownership table | Avoids “who is source of truth?” ambiguity |
-| Fake HarborPOS client | Portfolio-safe, testable |
+| `afterCommit` dispatch | Prevents races with uncommitted rows |
+| Explicit ownership table | Makes source-of-truth unambiguous |
+| Partner client interface | Testable locally; swap for real HarborPOS HTTP later |

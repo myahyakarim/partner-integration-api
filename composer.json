@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "myahyakarim/partner-integration-api",
     "type": "project",
-    "description": "Senior portfolio demo: partner integration with after-commit side effects.",
+    "description": "Laravel partner integration API with after-commit outbound pushes.",
     "keywords": ["laravel", "integrations", "architecture"],
     "license": "MIT",
     "require": {

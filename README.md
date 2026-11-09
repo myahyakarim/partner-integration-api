@@ -1,17 +1,22 @@
 # Partner Integration API
 
-> Senior backend demo: **your API is only half the system — the partner is the other half.**
+PHP / Laravel service that accepts outbound orders for partner **HarborPOS**, persists them locally, then pushes **after the DB transaction commits**.
 
-PHP / Laravel service that accepts an outbound order for fictional partner **HarborPOS**, persists it, then pushes **after DB commit**.
+Your API is only half the system. The partner is the other half.
 
-Clean-room portfolio project. No employer code or brands.
+## Problem
 
-## Senior signals
+Firing a partner side effect inside an open transaction races the worker against uncommitted rows.
+Replays of the same accept must not enqueue duplicate pushes.
 
-- Explicit data ownership (who owns ticket status?)
-- `afterCommit()` job dispatch (no race with uncommitted rows)
-- Idempotent accept API
-- Fake partner client + feature tests
+## Approach
+
+- Persist an `outbound_orders` record first
+- Dispatch `PushOrderToPartnerJob` with `afterCommit()`
+- Idempotent accept via stable key `harborpos:push:{order_id}`
+- Explicit ownership: Northline owns the order; HarborPOS owns ticket state after accept
+
+Details: [ARCHITECTURE.md](./ARCHITECTURE.md)
 
 ## Quick start
 
@@ -24,10 +29,6 @@ php artisan migrate
 php artisan test
 ```
 
-## Architecture
-
-See [ARCHITECTURE.md](./ARCHITECTURE.md).
-
 ## Stack
 
-PHP 8.3+ · Laravel 13 · SQLite · PHPUnit
+PHP 8.3+ · Laravel · SQLite · PHPUnit
